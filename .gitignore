@@ -1,0 +1,8 @@
+# no tmp files
+/tmp
+
+# no log files
+/log
+
+# no OS files
+*.DS_Store

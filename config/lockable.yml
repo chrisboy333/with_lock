@@ -1,0 +1,3 @@
+url: druby://localhost:9999
+scope: <%= File.basename(File.expand_path('.')) %><%= ":#{Rails.env}" if defined?(Rails) %>
+directory: 'tmp'

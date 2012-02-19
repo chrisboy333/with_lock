@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
+$:.push File.expand_path(File.join('..','..','lib'), __FILE__)
+
+require 'lockable'
+if ARGV.include?('start')
+  Lockable::Server::start_service
+elsif ARGV.include?('stop')
+  Lockable::Server::stop_service
+elsif ARGV.include?('run')
+  Lockable::Server::run_service
+end
