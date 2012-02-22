@@ -43,7 +43,7 @@ class Lockable::Server
           locks[name] = {owner: owner, count: 1}
         end
       end
-      sleep 0.01
+      sleep 0.01 unless mine?(owner,name)
     end
     mine?(owner,name)
   end
@@ -80,7 +80,7 @@ class Lockable::Server
   end
   
   def self.started?
-    !pid.nil? && running?(pid)
+    pid.to_i > 0 && running?(pid)
   end
   
   def self.daemon_settings
@@ -97,6 +97,7 @@ class Lockable::Server
   
   def self.start_service
     return if started?
+    FileUtils.rm(pidfile) if File.exists?(pidfile)
     options = daemon_settings.merge(:ARGV => ['start'])
     Daemons.run_proc('lockable', options) do 
       DRb.start_service(Lockable::Server::url,Lockable::Server)
