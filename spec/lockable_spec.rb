@@ -23,20 +23,19 @@ describe Lockable do
       Lockable::Server::running?($$).should be_true
     end
     it "should report if given process id doesn't represent a running pid" do
-      if pid = fork
-        Process.wait(pid)
-        Lockable::Server::running?(pid).should be_false
-      else
-        Kernel.exit!
-      end
+      pid = `spec/support/echo_pid.sh`.to_s.strip
+      sleep 0.2
+      Lockable::Server::running?(pid).should be_false
     end
   end
   
   describe "#with_lock" do 
     it "should raise an exception if lockable server not started" do
       Lockable::Server.stop_service
+      started_trying = Time.now
       while Lockable::Server.started? do
-        sleep 0.1
+        sleep 0.2
+        raise Exception.new("Couldn't stop server!") unless (Time.now - 3.seconds) > started_trying
       end
       error_message = ''
       begin
@@ -48,14 +47,16 @@ describe Lockable do
       end
     end
     describe "when the server is running" do
-      before(:each) do
+      before(:all) do
         `script/lockable start`
+        started_trying = Time.now
         while !Lockable::Server.started? do
-          sleep 0.1
+          sleep 0.2
+          raise Exception.new("Couldn't start server!") unless (Time.now - 3.seconds) > started_trying
         end
         @locker = Lockable::Client.locker
       end
-      after(:each) do
+      after(:all) do
         `script/lockable stop`
         while Lockable::Server.started? do
           sleep 0.1
@@ -67,20 +68,12 @@ describe Lockable do
         end
       end
       it "should not allow another process to grab the same named lock" do
-        if pid = fork
-          sleep 0.3
-          Process.detach(pid)
-          expect {
-            with_lock('name',0.5) do
-            end
-          }.to raise_exception(Lockable::LockException)
-        else
-          Lockable::Client.reconnect!
-          with_lock('name') do
-            sleep 1
+        system("spec/support/get_lock.rb name 0.5 10 &")
+        sleep 1
+        expect {
+          with_lock('name',0.5) do
           end
-          Kernel.exit!
-        end
+        }.to raise_exception(Lockable::LockException)
       end
       
       it "should have a counter of 1 when it first grabs the lock" do
@@ -122,22 +115,14 @@ describe Lockable do
       end
       
       it "should release the lock on a clean exit" do
-        fork do
-          Lockable::Client.reconnect!
-          with_lock('blarg') do
-            exit
-          end
-        end
+        `spec/support/get_lock.rb blarg 0.3 exit`
+        sleep 0.2
         @locker.locks[Lockable::Client.scoped_name('blarg')].should be_nil
       end
       
       it "should release the lock on an immediate exit" do
-        fork do
-          Lockable::Client.reconnect!
-          with_lock('blarg') do
-            Kernel.exit!
-          end
-        end
+        `spec/support/get_lock.rb blarg 0.3 kernel_exit`
+        sleep 0.2
         @locker.locks[Lockable::Client.scoped_name('blarg')].should be_nil
       end
     end

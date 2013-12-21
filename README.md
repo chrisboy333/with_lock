@@ -12,9 +12,9 @@ gem "lockable", git: 'https://github.com/chrisboy333/lockable.git'
 
 **Tested under Ruby 1.9.3.**
 
-Add script and config files to your project:
+Add script and config files to your project(from console):
 ```ruby
-Lockable::Server.setup
+Lockable.setup
 ```
 In the configuration file you can change some settings if you like ... it defaults to using the following... where 'scope' is the application directory name with rails environment appended(if present):
   url: druby://loclahost:9999

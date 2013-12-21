@@ -2,11 +2,36 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path(File.join('..','..','lib'), __FILE__)
 
+require "rubygems"
+require "bundler"
+Bundler.setup
+
+FileUtils.mkdir_p('tmp/pids') unless File.exists?('tmp/pids')
+
 require 'lockable'
 if ARGV.include?('start')
-  Lockable::Server::start_service
+  begin
+    locker = Lockable::Client.locker
+  rescue Lockable::LockException => e
+    puts "Starting Lockable on #{Lockable::Server::url}!"
+    Lockable::Server::start_service
+    locker = Lockable::Client.locker
+  end
+  puts "Clearing Lockable locks!"
+  locker = Lockable::Client.locker
+  locker.locks.each_pair do |lock,data|
+    pid = data[:owner].split('|').last
+    if locker.running?(pid) || !data[:owner].include?(`hostname`.strip)
+      puts "Running - pid"
+    else
+      puts "Not Running - pid"
+      locker.release(data[:owner],lock)
+    end
+  end
 elsif ARGV.include?('stop')
+  puts "Stopping Lockable!"
   Lockable::Server::stop_service
 elsif ARGV.include?('run')
+  puts "Running Lockable!"
   Lockable::Server::run_service
 end

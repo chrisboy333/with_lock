@@ -82,6 +82,8 @@ module Lockable
   end
 end
 
+Lockable::Public.respond_to?(:with_lock)
+
 require 'lockable/server'
 require 'lockable/client'
 Object.send :include, Lockable::Public
