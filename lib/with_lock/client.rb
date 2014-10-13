@@ -1,5 +1,5 @@
-class Lockable::Client
-  extend Lockable::Common
+class WithLock::Client
+  extend WithLock::Common
   @@locker = nil
   
   def self.scoped_name(name)
@@ -25,7 +25,7 @@ class Lockable::Client
   def self.with_lock(name, timeout=5, &block)
     begin
       locked = mine?(name) && increment(name)
-      locked ||= get(name,timeout) || raise(Lockable::LockException.new("Failed to obtain lock #{name} in #{timeout} seconds."))
+      locked ||= get(name,timeout) || raise(WithLock::LockException.new("Failed to obtain lock #{name} in #{timeout} seconds."))
       yield
     ensure
       if locker_available?
@@ -70,7 +70,7 @@ class Lockable::Client
       reconnect!
       @@locker = nil unless (@@locker.url rescue false)
     end
-    raise Lockable::LockException.new("Couldn't connect to locker.") if @@locker.nil?
+    raise WithLock::LockException.new("Couldn't connect to locker.") if @@locker.nil?
     @@locker
   end
 end

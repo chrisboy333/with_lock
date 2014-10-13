@@ -1,8 +1,8 @@
 require 'drb'
 require 'daemons'
 
-class Lockable::Server
-  extend Lockable::Common
+class WithLock::Server
+  extend WithLock::Common
   
   def self.mutex
     @@mutex ||= Mutex.new
@@ -76,7 +76,7 @@ class Lockable::Server
   end
   
   def self.write_url(url)
-    File.open(File.join(settings['directory'],'lockable'),'w'){|file| file.write(url)}
+    File.open(File.join(settings['directory'],'with_lock'),'w'){|file| file.write(url)}
   end
   
   def self.started?
@@ -99,15 +99,15 @@ class Lockable::Server
     return if started?
     FileUtils.rm(pidfile) if File.exists?(pidfile)
     options = daemon_settings.merge(:ARGV => ['start'])
-    Daemons.run_proc('lockable', options) do 
-      DRb.start_service(Lockable::Server::url,Lockable::Server)
+    Daemons.run_proc('with_lock', options) do 
+      DRb.start_service(WithLock::Server::url,WithLock::Server)
       DRb.thread.join
     end
   end
   
   def self.run_service
     return if started?
-    DRb.start_service(Lockable::Server::url,Lockable::Server)
+    DRb.start_service(WithLock::Server::url,WithLock::Server)
     DRb.thread.join
   end
   

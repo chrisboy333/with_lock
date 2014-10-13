@@ -7,8 +7,8 @@ require "rubygems"
 require "bundler"
 Bundler.setup
 
-require 'lockable'
-include Lockable::Public
+require 'with_lock'
+include WithLock::Public
 
 begin
   with_lock(ARGV[0],ARGV[1].to_f||0.5) do
@@ -16,6 +16,6 @@ begin
     Kernel.exit! if ARGV[3].eql?('kernel_exit')
     exit(0) if ARGV[2].eql?('exit')
   end
-rescue Lockable::LockException => e
+rescue WithLock::LockException => e
   puts exit(1)
 end

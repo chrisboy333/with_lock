@@ -1,25 +1,25 @@
-require "lockable/version"
+require "with_lock/version"
 require 'erb'
 require 'yaml'
 require 'fileutils'
 require 'logger'
 
-module Lockable
+module WithLock
   class LockException < Exception
   end
   
   def self.setup
     gem_dir = File.expand_path(File.join('..','..'),__FILE__)
     app_dir = File.expand_path('.')
-    FileUtils.cp(File.join(gem_dir,'config','lockable.yml'),File.join(app_dir,'config','lockable.yml'))
-    FileUtils.cp(File.join(gem_dir,'script','lockable'),File.join(app_dir,'script','lockable'))
-    FileUtils.chmod(0755, File.join(app_dir,'script','lockable'))
+    FileUtils.cp(File.join(gem_dir,'config','with_lock.yml'),File.join(app_dir,'config','with_lock.yml'))
+    FileUtils.cp(File.join(gem_dir,'script','with_lock'),File.join(app_dir,'script','with_lock'))
+    FileUtils.chmod(0755, File.join(app_dir,'script','with_lock'))
     true
   end
 
   module Public
     def with_lock(name,timeout=5,&block)
-      Lockable::Client.with_lock(name,timeout) do
+      WithLock::Client.with_lock(name,timeout) do
         yield
       end
     end
@@ -31,7 +31,7 @@ module Lockable
       @@logger = nil
       @@logger = Rails.logger if defined?(Rails)
       FileUtils.mkdir_p('log') if @@logger.nil?
-      @@logger ||= Logger.new(File.join('log','lockable.log'))
+      @@logger ||= Logger.new(File.join('log','with_lock.log'))
     end
     
     def url
@@ -39,7 +39,7 @@ module Lockable
     end
     
     def pidfile
-      File.join('tmp','pids','lockable.pid')
+      File.join('tmp','pids','with_lock.pid')
     end
     
     def pid
@@ -53,11 +53,11 @@ module Lockable
     end
     
     def settings_filename
-      File.join('config','lockable.yml')
+      File.join('config','with_lock.yml')
     end
     
     def local_settings_filename
-      File.join('config','lockable.local.yml')
+      File.join('config','with_lock.local.yml')
     end
     
     def settings
@@ -82,8 +82,8 @@ module Lockable
   end
 end
 
-Lockable::Public.respond_to?(:with_lock)
+WithLock::Public.respond_to?(:with_lock)
 
-require 'lockable/server'
-require 'lockable/client'
-Object.send :include, Lockable::Public
+require 'with_lock/server'
+require 'with_lock/client'
+Object.send :include, WithLock::Public
