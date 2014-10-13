@@ -1,4 +1,4 @@
-module Lockable
+module WithLock
   VERSION = "0.0.4.alpha"
 end
 

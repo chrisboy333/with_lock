@@ -8,17 +8,17 @@ Bundler.setup
 
 FileUtils.mkdir_p('tmp/pids') unless File.exists?('tmp/pids')
 
-require 'lockable'
+require 'with_lock'
 if ARGV.include?('start')
   begin
-    locker = Lockable::Client.locker
-  rescue Lockable::LockException => e
-    puts "Starting Lockable on #{Lockable::Server::url}!"
-    Lockable::Server::start_service
-    locker = Lockable::Client.locker
+    locker = WithLock::Client.locker
+  rescue WithLock::LockException => e
+    puts "Starting WithLock on #{WithLock::Server::url}!"
+    WithLock::Server::start_service
+    locker = WithLock::Client.locker
   end
-  puts "Clearing Lockable locks!"
-  locker = Lockable::Client.locker
+  puts "Clearing WithLock locks!"
+  locker = WithLock::Client.locker
   locker.locks.each_pair do |lock,data|
     pid = data[:owner].split('|').last
     if locker.running?(pid) || !data[:owner].include?(`hostname`.strip)
@@ -29,9 +29,9 @@ if ARGV.include?('start')
     end
   end
 elsif ARGV.include?('stop')
-  puts "Stopping Lockable!"
-  Lockable::Server::stop_service
+  puts "Stopping WithLock!"
+  WithLock::Server::stop_service
 elsif ARGV.include?('run')
-  puts "Running Lockable!"
-  Lockable::Server::run_service
+  puts "Running WithLock!"
+  WithLock::Server::run_service
 end
