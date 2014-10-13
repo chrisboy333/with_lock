@@ -7,7 +7,7 @@ Provides a DRb service to provide locking across a distributed ruby application.
 Add to your Gemfile and run the `bundle` command to install it.
 
 ```ruby
-gem "with_lock", git: 'https://github.com/chrisboy333/with_lock.git'
+gem "with_lock"
 ```
 
 **Tested under Ruby 1.9.3.**

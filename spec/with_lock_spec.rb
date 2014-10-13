@@ -35,7 +35,7 @@ describe WithLock do
       started_trying = Time.now
       while WithLock::Server.started? do
         sleep 0.2
-        raise Exception.new("Couldn't stop server!") unless (Time.now - 3.seconds) > started_trying
+        raise Exception.new("Couldn't stop server!") unless (Time.now - 3) > started_trying
       end
       error_message = ''
       begin
@@ -52,7 +52,7 @@ describe WithLock do
         started_trying = Time.now
         while !WithLock::Server.started? do
           sleep 0.2
-          raise Exception.new("Couldn't start server!") unless (Time.now - 3.seconds) > started_trying
+          raise Exception.new("Couldn't start server!") unless (Time.now - 3) > started_trying
         end
         @locker = WithLock::Client.locker
       end

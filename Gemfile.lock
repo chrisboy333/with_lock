@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lockable (0.0.3.alpha)
+    with_lock (0.0.4.alpha)
       daemons
 
 GEM
@@ -22,5 +22,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  lockable!
   rspec
+  with_lock!
