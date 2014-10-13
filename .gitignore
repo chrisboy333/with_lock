@@ -6,3 +6,5 @@
 
 # no OS files
 *.DS_Store
+
+*.gem

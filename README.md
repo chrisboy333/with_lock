@@ -10,7 +10,7 @@ Add to your Gemfile and run the `bundle` command to install it.
 gem "with_lock"
 ```
 
-**Tested under Ruby 1.9.3.**
+**Tested under Ruby 1.9.3-p545 and 2.1.3**
 
 Add script and config files to your project(from console):
 ```ruby
@@ -28,8 +28,6 @@ Start/Stop the service from ruby
 WithLock::Server.start_service
 WithLock::Server.stop_service
 ```
-Start/Stop service from 
-
 ## Usage
 A "with_lock()" function is provided globally to wrap with_lock sections of code.
  

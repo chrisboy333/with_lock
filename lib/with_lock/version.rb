@@ -1,4 +1,4 @@
 module WithLock
-  VERSION = "0.0.4.alpha"
+  VERSION = "0.1"
 end
 
