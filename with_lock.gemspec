@@ -6,6 +6,7 @@ Gem::Specification.new do |s|
   s.name        = "with_lock"
   s.version     = WithLock::VERSION
   s.authors     = ["Christopher Louis Hauboldt"]
+  s.licenses    = ['MIT']
   s.email       = ["chris@hauboldt.us"]
   s.homepage    = "https://github.com/chrisboy333/with_lock"
   s.summary     = %q{Implements named mutexes for ruby applications.}
@@ -18,6 +19,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_development_dependency "rspec"
-  s.add_dependency "daemons"
+  s.add_development_dependency "rspec", ">2.8", "~>2.8.0"
+  s.add_dependency "daemons", ">1.1", "~>1.1.9"
 end
